@@ -4,6 +4,7 @@ const optionsDefinition = require("./options");
 const { spawnSync } = require("child_process");
 const c = require("chalk");
 const path = require("path");
+const { getgid, getuid } = require("process");
 const which = require("which");
 const fs = require("fs-extra");
 const { MegaLinterUpgrader } = require("./upgrade");
@@ -126,6 +127,9 @@ ERROR: Docker engine has not been found on your system.
     }
     if (options["containerName"]) {
       commandArgs.push(...["--name", options["containerName"]]);
+    }
+    if (getuid && getgid) {
+      commandArgs.push(...["--user", `${getuid()}:${getgid()}`]);
     }
     commandArgs.push(...["-v", "/var/run/docker.sock:/var/run/docker.sock:rw"]);
     commandArgs.push(...["-v", `${lintPath}:/tmp/lint:rw`]);
