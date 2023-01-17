@@ -33,6 +33,10 @@ linters:
       - "npm-groovy-lint myfile.groovy"
       - "npm-groovy-lint -c .groovylintrc.json "
       - "npm-groovy-lint -c .groovylintrc.json --fix myfile.groovy myfile2.groovy"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       apk:
         - openjdk11

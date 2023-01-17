@@ -5,6 +5,10 @@ descriptor_flavors:
   - javascript
 file_extensions:
   - ".ts"
+supported_platforms:
+  platform:
+    - linux/amd64
+    - linux/arm64
 install:
   npm:
     - typescript
@@ -53,6 +57,10 @@ linters:
       - "eslint myfile.ts"
       - "eslint -c .eslintrc.json --no-eslintrc --no-ignore myfile.ts"
       - "eslint --fix -c .eslintrc.json --no-eslintrc --no-ignore myfile.ts"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       npm:
         - eslint
@@ -119,6 +127,10 @@ linters:
     examples:
       - "standard --parser @typescript-eslint/parser --plugin @typescript-eslint/eslint-plugin myfile.ts"
       - "standard --parser @typescript-eslint/parser --plugin @typescript-eslint/eslint-plugin --fix myfile.ts"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       npm:
         - standard
@@ -175,6 +187,10 @@ linters:
       - "prettier --check myfile.ts"
       - "prettier --config .prettierrc.json --check myfile.ts"
       - "prettier --config .prettierrc.json --write myfile.ts" # format
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       npm:
         - "prettier"

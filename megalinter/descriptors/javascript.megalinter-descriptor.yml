@@ -53,6 +53,10 @@ linters:
       - "eslint myfile.js"
       - "eslint -c .eslintrc.json --no-eslintrc --no-ignore myfile.js"
       - "eslint --fix -c .eslintrc.json --no-eslintrc --no-ignore myfile.js"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       npm:
         - eslint
@@ -113,6 +117,10 @@ linters:
     examples:
       - "standard myfile.js"
       - "standard --fix myfile.js"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       npm:
         - standard
@@ -167,6 +175,10 @@ linters:
       - "prettier --check myfile.js"
       - "prettier --config .prettierrc.json --check myfile.js"
       - "prettier --config .prettierrc.json --write myfile.js" # format
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       npm:
         - "prettier"

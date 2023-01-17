@@ -29,6 +29,10 @@ linters:
     examples:
       - "xmllint myfile.xml"
       - "xmllint --format myfile.xml --output myfile.xml"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       apk:
         - libc-dev

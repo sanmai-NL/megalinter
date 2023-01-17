@@ -33,6 +33,7 @@ ARG PWSH_DIRECTORY='/opt/microsoft/powershell'
 ARG ARM_TTK_NAME='master.zip'
 ARG ARM_TTK_URI='https://github.com/Azure/arm-ttk/archive/master.zip'
 ARG ARM_TTK_DIRECTORY='/opt/microsoft'
+ARG TARGETPLATFORM
 ARG BICEP_EXE='bicep'
 ARG BICEP_URI='https://github.com/Azure/bicep/releases/latest/download/bicep-linux-musl-x64'
 ARG BICEP_DIR='/usr/local/bin'
@@ -223,14 +224,20 @@ COPY --from=gitleaks /usr/bin/gitleaks /usr/bin/
 #############################################################################################
 #OTHER__START
 # ARM installation
-RUN mkdir -p ${PWSH_DIRECTORY} \
-    && curl --retry 5 --retry-delay 5 -s https://api.github.com/repos/powershell/powershell/releases/${PWSH_VERSION} \
-        | grep browser_download_url \
-        | grep linux-alpine-x64 \
-        | cut -d '"' -f 4 \
-        | xargs -n 1 wget -O - \
-        | tar -xzC ${PWSH_DIRECTORY} \
-    && ln -sf ${PWSH_DIRECTORY}/pwsh /usr/bin/pwsh \
+RUN case ${TARGETPLATFORM} in \
+      "linux/amd64")  POWERSHELL_ARCH=alpine-x64 ;; \
+      "linux/arm64")  POWERSHELL_ARCH=arm64      ;; \
+      "linux/arm/v7") POWERSHELL_ARCH=arm32      ;; \
+    esac \
+  && mkdir -p ${PWSH_DIRECTORY} \
+  && curl --retry 5 --retry-delay 5 -s https://api.github.com/repos/powershell/powershell/releases/${PWSH_VERSION} \
+      | grep browser_download_url \
+      | grep linux-${POWERSHELL_ARCH} \
+      | cut -d '"' -f 4 \
+      | xargs -n 1 wget -O - \
+      | tar -xzC ${PWSH_DIRECTORY} \
+  && chmod +x /usr/bin/pwsh \
+  && ln -sf ${PWSH_DIRECTORY}/pwsh /usr/bin/pwsh \
 
 # CSHARP installation
     && wget --tries=5 -q -O dotnet-install.sh https://dot.net/v1/dotnet-install.sh \
@@ -240,16 +247,21 @@ RUN mkdir -p ${PWSH_DIRECTORY} \
 ENV PATH="${PATH}:/root/.dotnet/tools:/usr/share/dotnet"
 
 # POWERSHELL installation
-RUN mkdir -p ${PWSH_DIRECTORY} \
-    && curl --retry 5 --retry-delay 5 -s https://api.github.com/repos/powershell/powershell/releases/${PWSH_VERSION} \
-        | grep browser_download_url \
-        | grep linux-alpine-x64 \
-        | cut -d '"' -f 4 \
-        | xargs -n 1 wget -O - \
-        | tar -xzC ${PWSH_DIRECTORY} \
-    && ln -sf ${PWSH_DIRECTORY}/pwsh /usr/bin/pwsh \
-    && chmod +x /usr/bin/pwsh
-
+# Next line commented because already managed by another linter
+# RUN case ${TARGETPLATFORM} in \
+#       "linux/amd64")  POWERSHELL_ARCH=alpine-x64 ;; \
+#       "linux/arm64")  POWERSHELL_ARCH=arm64      ;; \
+#       "linux/arm/v7") POWERSHELL_ARCH=arm32      ;; \
+#     esac \
+#   && mkdir -p ${PWSH_DIRECTORY} \
+#   && curl --retry 5 --retry-delay 5 -s https://api.github.com/repos/powershell/powershell/releases/${PWSH_VERSION} \
+#       | grep browser_download_url \
+#       | grep linux-${POWERSHELL_ARCH} \
+#       | cut -d '"' -f 4 \
+#       | xargs -n 1 wget -O - \
+#       | tar -xzC ${PWSH_DIRECTORY} \
+#   && chmod +x /usr/bin/pwsh \
+#   && ln -sf ${PWSH_DIRECTORY}/pwsh /usr/bin/pwsh
 
 # VBDOTNET installation
 # Next line commented because already managed by another linter
@@ -276,11 +288,16 @@ RUN curl --retry 5 --retry-delay 5 -sLO "${ARM_TTK_URI}" \
     && chmod +x /usr/bin/bash-exec \
 
 # shellcheck installation
-    && ML_THIRD_PARTY_DIR="/third-party/shellcheck" \
-    && mkdir -p ${ML_THIRD_PARTY_DIR} \
-    && wget -qO- "https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz" | tar -xJv --directory ${ML_THIRD_PARTY_DIR} \
-    && mv "${ML_THIRD_PARTY_DIR}/shellcheck-stable/shellcheck" /usr/bin/ \
-    && find ${ML_THIRD_PARTY_DIR} -type f -not -name 'LICENSE*' -delete -o -type d -empty -delete \
+    && case ${TARGETPLATFORM} in \
+      "linux/amd64")  SHELLCHECK_ARCH=x86_64   ;; \
+      "linux/arm64")  SHELLCHECK_ARCH=aarch64  ;; \
+      "linux/arm/v6") SHELLCHECK_ARCH=armv6hf  ;; \
+    esac \
+  && ML_THIRD_PARTY_DIR="/third-party/shellcheck" \
+  && mkdir -p ${ML_THIRD_PARTY_DIR} \
+  && wget -qO- "https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.${SHELLCHECK_ARCH}.tar.xz" | tar -xJv --directory ${ML_THIRD_PARTY_DIR} \
+  && mv "${ML_THIRD_PARTY_DIR}/shellcheck-stable/shellcheck" /usr/bin/ \
+  && find ${ML_THIRD_PARTY_DIR} -type f -not -name 'LICENSE*' -delete -o -type d -empty -delete \
 
 # shfmt installation
 # Managed with COPY --from=shfmt /bin/shfmt /usr/bin/
@@ -311,23 +328,37 @@ RUN curl --retry 5 --retry-delay 5 -sLO "${ARM_TTK_URI}" \
     mv "ktlint" /usr/bin/ \
 
 # kubeval installation
-    && ML_THIRD_PARTY_DIR="/third-party/kubeval" \
-    && mkdir -p ${ML_THIRD_PARTY_DIR} \
-    && wget -P ${ML_THIRD_PARTY_DIR} -q https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz \
-    && tar xf ${ML_THIRD_PARTY_DIR}/kubeval-linux-amd64.tar.gz --directory ${ML_THIRD_PARTY_DIR} \
-    && mv ${ML_THIRD_PARTY_DIR}/kubeval /usr/local/bin \
-    && rm ${ML_THIRD_PARTY_DIR}/kubeval-linux-amd64.tar.gz \
-    && find ${ML_THIRD_PARTY_DIR} -type f -not -name 'LICENSE*' -delete -o -type d -empty -delete \
+    && if [ "$TARGETPLATFORM" = "linux/amd64" ] || [ "$TARGETPLATFORM" = "linux/386" ] || [ "$TARGETPLATFORM" = "windows/amd64" ]; then \
+         case ${TARGETPLATFORM} in \
+           "linux/amd64")   KUBEVAL_ARCH=linux-amd64   ;; \
+           "linux/386")     KUBEVAL_ARCH=linux-386     ;; \
+           "windows/amd64") KUBEVAL_ARCH=windows-amd64 ;; \
+         esac \
+         && ML_THIRD_PARTY_DIR="/third-party/kubeval" \
+         && mkdir -p ${ML_THIRD_PARTY_DIR} \
+         && wget -P ${ML_THIRD_PARTY_DIR} -q https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-${KUBEVAL_ARCH}.tar.gz \
+         && tar xf ${ML_THIRD_PARTY_DIR}/kubeval-${KUBEVAL_ARCH}.tar.gz --directory ${ML_THIRD_PARTY_DIR} \
+         && mv ${ML_THIRD_PARTY_DIR}/kubeval /usr/local/bin \
+         && rm ${ML_THIRD_PARTY_DIR}/kubeval-${KUBEVAL_ARCH}.tar.gz \
+         && find ${ML_THIRD_PARTY_DIR} -type f -not -name 'LICENSE*' -delete -o -type d -empty -delete; \
+    fi \
 
 # kubeconform installation
-    && ML_THIRD_PARTY_DIR="/third-party/kubeconform" \
-    && KUBECONFORM_VERSION=v0.5.0 \
-    && mkdir -p ${ML_THIRD_PARTY_DIR} \
-    && wget -P ${ML_THIRD_PARTY_DIR} -q https://github.com/yannh/kubeconform/releases/download/$KUBECONFORM_VERSION/kubeconform-linux-amd64.tar.gz \
-    && tar xf ${ML_THIRD_PARTY_DIR}/kubeconform-linux-amd64.tar.gz --directory ${ML_THIRD_PARTY_DIR} \
-    && mv ${ML_THIRD_PARTY_DIR}/kubeconform /usr/local/bin \
-    && rm ${ML_THIRD_PARTY_DIR}/kubeconform-linux-amd64.tar.gz \
-    && find ${ML_THIRD_PARTY_DIR} -type f -not -name 'LICENSE*' -delete -o -type d -empty -delete \
+    && case ${TARGETPLATFORM} in \
+      "linux/amd64")   KUBECONFORM_ARCH=linux-amd64   ;; \
+      "linux/arm64")   KUBECONFORM_ARCH=linux-arm64   ;; \
+      "linux/arm/v6")  KUBECONFORM_ARCH=linux-armv6   ;; \
+      "linux/386")     KUBECONFORM_ARCH=linux-386     ;; \
+      "windows/amd64") KUBECONFORM_ARCH=windows-amd64 ;; \
+    esac \
+  && ML_THIRD_PARTY_DIR="/third-party/kubeconform" \
+  && KUBECONFORM_VERSION=v0.4.12 \
+  && mkdir -p ${ML_THIRD_PARTY_DIR} \
+  && wget -P ${ML_THIRD_PARTY_DIR} -q https://github.com/yannh/kubeconform/releases/download/$KUBECONFORM_VERSION/kubeconform-${KUBECONFORM_ARCH}.tar.gz \
+  && tar xf ${ML_THIRD_PARTY_DIR}/kubeconform-${KUBECONFORM_ARCH}.tar.gz --directory ${ML_THIRD_PARTY_DIR} \
+  && mv ${ML_THIRD_PARTY_DIR}/kubeconform /usr/local/bin \
+  && rm ${ML_THIRD_PARTY_DIR}/kubeconform-${KUBECONFORM_ARCH}.tar.gz \
+  && find ${ML_THIRD_PARTY_DIR} -type f -not -name 'LICENSE*' -delete -o -type d -empty -delete \
 
 # checkmake installation
     && ( [ -d /usr/local/bin ] || mkdir -p /usr/local/bin ) \
@@ -351,12 +382,14 @@ RUN curl --retry 5 --retry-delay 5 -sLO "${ARM_TTK_URI}" \
     && wget --tries=5 -q -O - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.35.0 \
 
 # misspell installation
-    && ML_THIRD_PARTY_DIR="/third-party/misspell" \
-    && mkdir -p ${ML_THIRD_PARTY_DIR} \
-    && curl -L -o ${ML_THIRD_PARTY_DIR}/install-misspell.sh https://git.io/misspell \
-    && sh .${ML_THIRD_PARTY_DIR}/install-misspell.sh \
-    && find ${ML_THIRD_PARTY_DIR} -type f -not -name 'LICENSE*' -delete -o -type d -empty -delete \
-    && find /tmp -path '/tmp/tmp.*' -type f -name 'misspell*' -delete -o -type d -empty -delete \
+    && if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+         ML_THIRD_PARTY_DIR="/third-party/misspell" \
+         && mkdir -p ${ML_THIRD_PARTY_DIR} \
+         && curl -L -o ${ML_THIRD_PARTY_DIR}/install-misspell.sh https://git.io/misspell \
+         && sh .${ML_THIRD_PARTY_DIR}/install-misspell.sh \
+         && find ${ML_THIRD_PARTY_DIR} -type f -not -name 'LICENSE*' -delete -o -type d -empty -delete \
+         && find /tmp -path '/tmp/tmp.*' -type f -name 'misspell*' -delete -o -type d -empty -delete; \
+    fi \
 
 # tsqllint installation
 # Next line commented because already managed by another linter

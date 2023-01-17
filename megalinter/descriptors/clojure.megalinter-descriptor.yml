@@ -25,6 +25,10 @@ linters:
     examples:
       - "clj-kondo --lint myfile.clj"
       - "clj-kondo --lint --config .clj-kondo/config.edn myfile.clj"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - windows/amd64
     install:
       dockerfile:
         - FROM cljkondo/clj-kondo:2023.01.12-alpine as clj-kondo

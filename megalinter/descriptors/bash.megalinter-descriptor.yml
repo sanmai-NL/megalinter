@@ -33,6 +33,13 @@ linters:
     cli_help_arg_name: "--help"
     examples:
       - "bash-exec myfile.sh"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
+        - linux/arm/v7
+        - linux/386
+        - linux/ppc64le
     install:
       dockerfile:
         - |
@@ -69,16 +76,27 @@ linters:
     cli_lint_errors_regex: "In .* line .*:.*\\n"
     examples:
       - "shellcheck --color=auto --external-sources myfile.sh"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
+        - linux/arm/v6
     install:
       cargo:
         - shellcheck-sarif
       dockerfile:
+        - ARG TARGETPLATFORM
         - |
-          RUN ML_THIRD_PARTY_DIR="/third-party/shellcheck" \
-              && mkdir -p ${ML_THIRD_PARTY_DIR} \
-              && wget -qO- "https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz" | tar -xJv --directory ${ML_THIRD_PARTY_DIR} \
-              && mv "${ML_THIRD_PARTY_DIR}/shellcheck-stable/shellcheck" /usr/bin/ \
-              && find ${ML_THIRD_PARTY_DIR} -type f -not -name 'LICENSE*' -delete -o -type d -empty -delete
+          RUN case ${TARGETPLATFORM} in \
+                "linux/amd64")  SHELLCHECK_ARCH=x86_64   ;; \
+                "linux/arm64")  SHELLCHECK_ARCH=aarch64  ;; \
+                "linux/arm/v6") SHELLCHECK_ARCH=armv6hf  ;; \
+              esac \
+            && ML_THIRD_PARTY_DIR="/third-party/shellcheck" \
+            && mkdir -p ${ML_THIRD_PARTY_DIR} \
+            && wget -qO- "https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.${SHELLCHECK_ARCH}.tar.xz" | tar -xJv --directory ${ML_THIRD_PARTY_DIR} \
+            && mv "${ML_THIRD_PARTY_DIR}/shellcheck-stable/shellcheck" /usr/bin/ \
+            && find ${ML_THIRD_PARTY_DIR} -type f -not -name 'LICENSE*' -delete -o -type d -empty -delete
     ide:
       atom:
         - name: linter-shellcheck
@@ -121,6 +139,13 @@ linters:
     examples:
       - "shfmt -d myfile.sh"
       - "shfmt -w myfile.sh" # Fix
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
+        - linux/arm/v7
+        - linux/386
+        - linux/ppc64le
     install:
       apk:
         - go

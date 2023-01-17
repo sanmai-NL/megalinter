@@ -20,6 +20,10 @@ linters:
       - --quiet
     examples:
       - "jsonlint myfile1.json myfile2.json"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       npm:
         - "@prantlf/jsonlint"
@@ -122,6 +126,10 @@ linters:
       - "eslint -c .eslintrc-json.json --no-eslintrc --no-ignore myfile.json5"
       - "eslint -c .eslintrc-json.json --no-eslintrc --no-ignore myfile.jsonc"
       - "eslint --fix -c .eslintrc-json.json --no-eslintrc --no-ignore myfile.json"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       npm:
         - eslint
@@ -146,6 +154,10 @@ linters:
     test_folder: json_schema
     examples:
       - "v8r --ignore-errors myfile.json"
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       npm:
         - v8r
@@ -184,6 +196,10 @@ linters:
       - "prettier --check myfile.json"
       - "prettier --config .prettierrc.json --check myfile.json"
       - "prettier --config .prettierrc.json --write myfile.json" # format
+    supported_platforms:
+      platform:
+        - linux/amd64
+        - linux/arm64
     install:
       npm:
         - "prettier"
