@@ -13,7 +13,15 @@ class LinterTestRoot:
     linter_name: Optional[str] = None
 
     def get_linter_instance(self):
-        return linter_factory.build_linter(self.descriptor_id, self.linter_name)
+        return linter_factory.build_linter(self.descriptor_id, self.linter_name, {
+                "default_linter_activation": True,
+                "enable_descriptors": [],
+                "enable_linters": [],
+                "disable_descriptors": [],
+                "disable_linters": [],
+                "disable_errors_linters": [],
+                "post_linter_status": True,
+            })
 
     def test_success(self):
         utilstest.linter_test_setup()
@@ -38,3 +46,7 @@ class LinterTestRoot:
     def test_report_sarif(self):
         utilstest.linter_test_setup({"report_type": "SARIF"})
         utilstest.test_linter_report_sarif(self.get_linter_instance(), self)
+
+    def test_format_fix(self):
+        utilstest.linter_test_setup()
+        utilstest.test_linter_format_fix(self.get_linter_instance(), self)
