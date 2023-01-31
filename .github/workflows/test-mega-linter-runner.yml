@@ -22,6 +22,8 @@ jobs:
         uses: actions/setup-node@v3.6.0
         with:
           node-version: "12"
+      - name: Use Docker in rootless mode.
+        uses: ScribeMD/rootless-docker@0.2.2
       - name: Install dependencies
         run: cd mega-linter-runner && yarn install --frozen-lockfile && npm link
       - name: Run tests
