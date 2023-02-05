@@ -104,6 +104,7 @@ jobs:
         if: "contains(github.event.head_commit.message, 'quick build push')"
         env:
           # Set the Env Vars
+          GITHUB_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           IMAGE_REPO: oxsecurity/megalinter
@@ -143,6 +144,7 @@ jobs:
           !contains(github.event.head_commit.message, 'quick build')
         env:
           # Set the Env Vars
+          GITHUB_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           IMAGE_REPO: oxsecurity/megalinter
