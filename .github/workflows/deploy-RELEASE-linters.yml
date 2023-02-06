@@ -91,7 +91,6 @@ jobs:
       - name: Deploy ${{ github.event.release.tag_name }} image to DockerHub
         env:
           # Set the Env Vars
-          GITHUB_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           IMAGE_REPO: oxsecurity/megalinter-only-${{ matrix.linter }}
@@ -109,7 +108,6 @@ jobs:
       - name: Deploy ${{ github.event.release.tag_name }} image to GitHub Container Registry
         env:
           # Set the Env Vars
-          GITHUB_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GCR_USERNAME: ${{ secrets.GCR_USERNAME }}
           GCR_TOKEN: ${{ secrets.GCR_PASSWORD }}
           IMAGE_REPO: oxsecurity/megalinter-only-${{ matrix.linter }}

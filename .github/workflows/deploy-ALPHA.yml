@@ -64,7 +64,6 @@ jobs:
       - name: Deploy latest image to DockerHub
         env:
           # Set the Env Vars
-          GITHUB_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           IMAGE_REPO: oxsecurity/megalinter
@@ -82,7 +81,6 @@ jobs:
         if: github.repository == 'disabled'
         env:
           # Set the Env Vars
-          GITHUB_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GCR_USERNAME: ${{ secrets.GCR_USERNAME }}
           GCR_TOKEN: ${{ secrets.GCR_PASSWORD }}
           IMAGE_REPO: oxsecurity/megalinter

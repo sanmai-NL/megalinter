@@ -108,7 +108,6 @@ jobs:
       - name: Deploy ${{ needs.prepare.outputs.tag }} image to DockerHub
         env:
           # Set the Env Vars
-          GITHUB_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           IMAGE_REPO: oxsecurity/megalinter-only-${{ matrix.linter }}
