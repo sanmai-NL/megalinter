@@ -17,7 +17,6 @@
 ###########
 # Globals #
 ###########
-GITHUB_AUTH_TOKEN="${GITHUB_AUTH_TOKEN}"           # GitHub Token
 GITHUB_WORKSPACE="${GITHUB_WORKSPACE}"             # GitHub Workspace
 GITHUB_REPOSITORY="${GITHUB_REPOSITORY}"           # GitHub Org/Repo passed from system
 DOCKER_USERNAME="${DOCKER_USERNAME}"               # Username to login to DockerHub
@@ -317,7 +316,7 @@ BuildImage() {
   ###################
   # Build the image #
   ###################
-  docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --no-cache --build-arg "GITHUB_AUTH_TOKEN=${GITHUB_AUTH_TOKEN}" --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${BUILD_VERSION}" -t "${CONTAINER_URL}:${IMAGE_VERSION}" -f "${DOCKERFILE_PATH}" --load . 2>&1
+  docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --no-cache --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${BUILD_VERSION}" -t "${CONTAINER_URL}:${IMAGE_VERSION}" -f "${DOCKERFILE_PATH}" --load . 2>&1
 
   #######################
   # Load the error code #
@@ -342,8 +341,8 @@ BuildImage() {
     # docker tag "${CONTAINER_URL}:${IMAGE_VERSION}" "${CONTAINER_URL}:latest"
 
     # Tag the image with the major tag & latest tag as well
-    docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --build-arg "GITHUB_AUTH_TOKEN=${GITHUB_AUTH_TOKEN}" --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${MAJOR_TAG}" -t "${CONTAINER_URL}:latest" -f "${DOCKERFILE_PATH}" --load . 2>&1
-    docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --build-arg "GITHUB_AUTH_TOKEN=${GITHUB_AUTH_TOKEN}" --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${MAJOR_TAG}" -t "${CONTAINER_URL}:${MAJOR_TAG}" -f "${DOCKERFILE_PATH}" --load . 2>&1
+    docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${MAJOR_TAG}" -t "${CONTAINER_URL}:latest" -f "${DOCKERFILE_PATH}" --load . 2>&1
+    docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${MAJOR_TAG}" -t "${CONTAINER_URL}:${MAJOR_TAG}" -f "${DOCKERFILE_PATH}" --load . 2>&1
 
     #######################
     # Load the error code #
@@ -379,7 +378,7 @@ BuildImage() {
   ###################
   # Build the image #
   ###################
-  docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --build-arg "GITHUB_AUTH_TOKEN=${GITHUB_AUTH_TOKEN}" --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${BUILD_VERSION}" -t "${ADDITIONAL_URL}:${IMAGE_VERSION}" -f "${DOCKERFILE_PATH}" --load . 2>&1
+  docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${BUILD_VERSION}" -t "${ADDITIONAL_URL}:${IMAGE_VERSION}" -f "${DOCKERFILE_PATH}" --load . 2>&1
 
   #######################
   # Load the error code #
@@ -404,8 +403,8 @@ BuildImage() {
     ###################
     # Build the image with latest tags#
     ###################
-    docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --build-arg "GITHUB_AUTH_TOKEN=${GITHUB_AUTH_TOKEN}" --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${MAJOR_TAG}" -t "${ADDITIONAL_URL}:latest" -f "${DOCKERFILE_PATH}" . --load 2>&1
-    docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --build-arg "GITHUB_AUTH_TOKEN=${GITHUB_AUTH_TOKEN}" --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${MAJOR_TAG}" -t "${ADDITIONAL_URL}:${MAJOR_TAG}" -f "${DOCKERFILE_PATH}" . --load 2>&1
+    docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${MAJOR_TAG}" -t "${ADDITIONAL_URL}:latest" -f "${DOCKERFILE_PATH}" . --load 2>&1
+    docker buildx build --platform "${DOCKER_BUILD_PLATFORMS}" $EXTRA_DOCKER_BUILD_ARGS --build-arg "BUILD_DATE=${BUILD_DATE}" --build-arg "BUILD_REVISION=${BUILD_REVISION}" --build-arg "BUILD_VERSION=${MAJOR_TAG}" -t "${ADDITIONAL_URL}:${MAJOR_TAG}" -f "${DOCKERFILE_PATH}" . --load 2>&1
 
     #######################
     # Load the error code #
