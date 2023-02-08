@@ -19,6 +19,12 @@ Note: Can be used with `oxsecurity/megalinter@beta` in your GitHub Action mega-l
   - [checkov](https://www.checkov.io/) from 2.1.244 to **2.2.341** on 2023-02-07
   - [git_diff](https://git-scm.com) from 2.36.4 to **2.38.3** on 2023-02-07
   - [xmllint](http://xmlsoft.org/xmllint.html) from 20914 to **21003** on 2023-02-07
+  - [djlint](https://djlint.com/) from 1.19.13 to **1.19.14** on 2023-02-08
+  - [phpstan](https://phpstan.org/) from 1.9.14 to **1.9.16** on 2023-02-08
+  - [checkov](https://www.checkov.io/) from 2.2.341 to **2.2.348** on 2023-02-08
+  - [sfdx-scanner-apex](https://forcedotcom.github.io/sfdx-scanner/) from 3.8.0 to **3.9.0** on 2023-02-08
+  - [sfdx-scanner-aura](https://forcedotcom.github.io/sfdx-scanner/) from 3.8.0 to **3.9.0** on 2023-02-08
+  - [sfdx-scanner-lwc](https://forcedotcom.github.io/sfdx-scanner/) from 3.8.0 to **3.9.0** on 2023-02-08
 <!-- linter-versions-end -->
 
 ## [v6.19.0] - 2023-02-05
